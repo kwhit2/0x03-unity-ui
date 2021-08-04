@@ -61,7 +61,7 @@ public class PlayerController : MonoBehaviour
         // Victory when player triggers the green goal plane
         if (other.gameObject.tag == "Goal")
         {
-            Debug.Log("You Win!");
+            Debug.Log("You win!");
         }
     }
 
