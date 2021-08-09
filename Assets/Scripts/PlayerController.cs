@@ -1,16 +1,37 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
     // speed variable
     public float speed = 2000f;
+
     // to reference the Rigidbody of the Player game object
     public Rigidbody rb;
+
     // to reference score variable
     private int score = 0;
+
     // to reference health variable
     public int health = 5;
+
+    // to reference ScoreText gameobject & display score
+    public Text scoreText;
+
+    // to reference HealthText game object & display health
+    public Text healthText;
+
+    // Winning text UI display 
+    public Text WinLoseText;
+
+    // background color of You win display
+    public Image WinLoseBG;
+
+    // to set You Win display to active when player triggers the goal
+    public GameObject winUi; 
+
 
     // Update is called once per frame
     void FixedUpdate()
@@ -47,7 +68,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.tag == "Pickup")
         {
             score += 1;
-            Debug.Log("Score: " + score);
+            SetScoreText();
             Destroy(other.gameObject);
         }
 
@@ -55,23 +76,54 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.tag == "Trap")
         {
             health -= 1;
-            Debug.Log("Health: " + health);
+            SetHealthText();
         }
 
         // Victory when player triggers the green goal plane
         if (other.gameObject.tag == "Goal")
         {
-            Debug.Log("You win!");
+            winUi.SetActive(true);
+            WinLoseText.text = "You Win!";
+            WinLoseBG.color = Color.green;
+            WinLoseText.color = Color.black;
+            StartCoroutine(LoadScene(3));
         }
     }
 
     // Game Over and reset game
     void Update()
     {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("menu");
+        }
+
         if (health == 0)
         {
-            Debug.Log("Game Over!");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            winUi.SetActive(true);
+            WinLoseText.text = "Game Over!";
+            WinLoseBG.color = Color.red;
+            WinLoseText.color = Color.white;
+            StartCoroutine(LoadScene(3));
         }
+    }
+
+    // UI Score: display score when coins are collected
+    void SetScoreText()
+    {
+        scoreText.text = "Score: " + score;
+    }
+
+    // UI Health: display health of player
+    void SetHealthText()
+    {
+        healthText.text = "Health: " + health;
+    }
+
+    // Wait for seconds before reloading scene
+    IEnumerator LoadScene(float seconds)
+    {
+        yield return new WaitForSeconds(3f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
